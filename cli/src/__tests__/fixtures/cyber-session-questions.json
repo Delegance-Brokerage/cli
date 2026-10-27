@@ -1,0 +1,1313 @@
+[
+ {
+  "id": "bf66834d2ae54e83",
+  "label": "Has the applicant, a majority owner, partner or member filed bankruptcy in the past five years?",
+  "type": "yes_no",
+  "required": true,
+  "group": "cyber"
+ },
+ {
+  "id": "b63cd8e941d23cee",
+  "label": "Does the applicant provide consumer products or services?",
+  "type": "yes_no",
+  "required": true,
+  "group": "cyber"
+ },
+ {
+  "id": "d96b07f48e2c3c8b",
+  "label": "Within the past 3 years, has the applicant had any actual or potential professional, E&O, media, or cyber incidents or claims? Or is the applicant aware of any notices, suits, facts or circumstances that could reasonably be expected to give rise to a professional, E&O, media, or cyber incident or claim?  ",
+  "type": "yes_no",
+  "required": true,
+  "group": "cyber"
+ },
+ {
+  "id": "13a531dd74d4fd44",
+  "label": "Does the applicant own or operate any other business under the same legal entity that will not be quoted on this application?",
+  "type": "yes_no",
+  "required": true,
+  "group": "cyber"
+ },
+ {
+  "id": "58a2307764340b9a",
+  "label": "Has any policy or coverage been cancelled or non-renewed during the prior three (3) years for any premises or operations?",
+  "type": "yes_no",
+  "required": true,
+  "group": "cyber"
+ },
+ {
+  "id": "bf26feabb19b0143",
+  "label": "Do you want to include Cyber incident response fund coverage in the policy?",
+  "type": "yes_no",
+  "required": false,
+  "showIf": {
+   "questionId": "c758a299eb2ff9d4",
+   "equals": [
+    "Custom",
+    "custom"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "99a67805533764ab",
+  "label": "Do you want to include Business interruption and extra expense coverage in the policy?",
+  "type": "yes_no",
+  "required": false,
+  "showIf": {
+   "questionId": "c758a299eb2ff9d4",
+   "equals": [
+    "Custom",
+    "custom"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "604d29b90959072e",
+  "label": "Do you want to include Contingent business interruption loss and extra expenses coverage in the policy?",
+  "type": "yes_no",
+  "required": false,
+  "showIf": {
+   "questionId": "c758a299eb2ff9d4",
+   "equals": [
+    "Custom",
+    "custom"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "100984b524642946",
+  "label": "Do you want to include Digital data recovery coverage in the policy?",
+  "type": "yes_no",
+  "required": false,
+  "showIf": {
+   "questionId": "c758a299eb2ff9d4",
+   "equals": [
+    "Custom",
+    "custom"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "f3a3cbe61c0df9dd",
+  "label": "Do you want to include Network extortion coverage in the policy?",
+  "type": "yes_no",
+  "required": false,
+  "showIf": {
+   "questionId": "c758a299eb2ff9d4",
+   "equals": [
+    "Custom",
+    "custom"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "ee52732cb6a11d3c",
+  "label": "Do you want to include Cyber privacy and network security liability coverage in the policy?",
+  "type": "yes_no",
+  "required": false,
+  "showIf": {
+   "questionId": "c758a299eb2ff9d4",
+   "equals": [
+    "Custom",
+    "custom"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "08601b362ec106fb",
+  "label": "Does Applicant have operations or customers in California, or any responsibilities under the California Confidentiality of Medical Information Act?",
+  "type": "select",
+  "options": [
+   {
+    "label": "Yes",
+    "value": "Yes"
+   },
+   {
+    "label": "No",
+    "value": "No"
+   },
+   {
+    "label": "Unknown",
+    "value": "Unknown"
+   }
+  ],
+  "required": true,
+  "group": "cyber"
+ },
+ {
+  "id": "3ada4501e784c167",
+  "label": "Does the Applicant intend to purchase E&O and/or Media coverage on a separate and distinct policy? (e.g. with a separate set of limits, or with another carrier?",
+  "type": "yes_no",
+  "required": true,
+  "group": "cyber"
+ },
+ {
+  "id": "04fd6ea276685e1a",
+  "label": "Do you want to include Payment card loss coverage in the policy?",
+  "type": "yes_no",
+  "required": false,
+  "showIf": {
+   "questionId": "c758a299eb2ff9d4",
+   "equals": [
+    "Custom",
+    "custom"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "62f35523d1f176ee",
+  "label": "Do you want to include Regulatory proceeding coverage in the policy?",
+  "type": "yes_no",
+  "required": false,
+  "showIf": {
+   "questionId": "c758a299eb2ff9d4",
+   "equals": [
+    "Custom",
+    "custom"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "b4f7a4c987a6b97e",
+  "label": "Do you want to include Electronic social and printed media liability coverage in the policy?",
+  "type": "yes_no",
+  "required": false,
+  "showIf": {
+   "questionId": "c758a299eb2ff9d4",
+   "equals": [
+    "Custom",
+    "custom"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "7f3d6b60b99b296f",
+  "label": "Has the Applicant obtained legal review of its use of trademarks, including domain names?",
+  "type": "select",
+  "options": [
+   {
+    "label": "Yes",
+    "value": "Yes"
+   },
+   {
+    "label": "No",
+    "value": "No"
+   },
+   {
+    "label": "Unknown",
+    "value": "Unknown"
+   }
+  ],
+  "required": true,
+  "group": "cyber"
+ },
+ {
+  "id": "6a274e28abc104e9",
+  "label": "Do you want to include Computer fraud coverage in the policy?",
+  "type": "yes_no",
+  "required": false,
+  "showIf": {
+   "questionId": "c758a299eb2ff9d4",
+   "equals": [
+    "Custom",
+    "custom"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "b07d55ca21ffd492",
+  "label": "Do you want to include Fund transfer fraud coverage in the policy?",
+  "type": "yes_no",
+  "required": false,
+  "showIf": {
+   "questionId": "c758a299eb2ff9d4",
+   "equals": [
+    "Custom",
+    "custom"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "4cbc629b3eb67cdf",
+  "label": "Do you want to include Social engineering fraud coverage in the policy?",
+  "type": "yes_no",
+  "required": false,
+  "showIf": {
+   "questionId": "c758a299eb2ff9d4",
+   "equals": [
+    "Custom",
+    "custom"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "0765a0ba3df07a8a",
+  "label": "Do you want to include Full Prior Acts for this coverage?",
+  "type": "yes_no",
+  "required": false,
+  "requiredIfShown": true,
+  "showIf": {
+   "questionId": "ee52732cb6a11d3c",
+   "equals": [
+    "Yes",
+    "yes"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "a7990efbf633a401",
+  "label": "Do you want to include Full Prior Acts for this coverage?",
+  "type": "yes_no",
+  "required": false,
+  "requiredIfShown": true,
+  "showIf": {
+   "questionId": "b4f7a4c987a6b97e",
+   "equals": [
+    "Yes",
+    "yes"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "c758a299eb2ff9d4",
+  "label": "Please select the coverage bundle you want-\nThe Custom bundle includes the coverages of your choice\nThe Comprehensive bundle includes all the available coverages",
+  "type": "select",
+  "options": [
+   {
+    "label": "Custom",
+    "value": "Custom"
+   },
+   {
+    "label": "Comprehensive",
+    "value": "Comprehensive"
+   }
+  ],
+  "required": true,
+  "group": "cyber"
+ },
+ {
+  "id": "27f07c235b1a00b8",
+  "label": "Does the applicant require a secondary means of communication to validate the authenticity of any request to change banking details (ACH, wire, payroll distribution, etc.)?",
+  "type": "select",
+  "options": [
+   {
+    "label": "Yes",
+    "value": "Yes"
+   },
+   {
+    "label": "No",
+    "value": "No"
+   },
+   {
+    "label": "N/A",
+    "value": "N/A"
+   }
+  ],
+  "required": true,
+  "group": "cyber"
+ },
+ {
+  "id": "933423a0385378d2",
+  "label": "Does the applicant collect, process, store, transmit, or have access to any Personally Identifiable Information (PII), or Protected Health Information (PHI) other than employees of the applicant?",
+  "type": "yes_no",
+  "required": true,
+  "group": "cyber"
+ },
+ {
+  "id": "884bf295bf1fe16c",
+  "label": "Does the applicant collect, process, store, transmit, or have access to any Payment Card Information (PCI) other than employees of the applicant?",
+  "type": "yes_no",
+  "required": true,
+  "group": "cyber"
+ },
+ {
+  "id": "c2c273818dbf79ae",
+  "label": "Does insured implement encryption on  - laptop computers, desktop computers, and other portable media devices - sensitive Data at rest and in transit?",
+  "type": "yes_no",
+  "required": true,
+  "group": "cyber"
+ },
+ {
+  "id": "ab76844086f0532b",
+  "label": "Within the last 3 years has insured been subject to any complaints concerning the content of its website, advertising materials, social media, or other publications?",
+  "type": "yes_no",
+  "required": true,
+  "group": "cyber"
+ },
+ {
+  "id": "a7a82c0f931ef3a6",
+  "label": "Does your organization have formal data-backup and recovery procedures that are tested periodically \u2014and do you keep offline (or network-segmented) backups of all sensitive or otherwise critical data and business systems at least weekly?",
+  "type": "yes_no",
+  "required": true,
+  "group": "cyber"
+ },
+ {
+  "id": "e83ca461d52f1a2e",
+  "label": "Does the applicant require a secondary means of communication to validate the authenticity of funds transfers (ACH, wire, etc.) requests before processing a request in excess of $25,000?",
+  "type": "yes_no",
+  "required": true,
+  "group": "cyber"
+ },
+ {
+  "id": "c314f51075726115",
+  "label": "Does the applicant require a secondary means of communication to validate the authenticity of funds transfers (ACH, wire, etc.) requests before processing a request in excess of $5,000?",
+  "type": "yes_no",
+  "required": false,
+  "requiredIfShown": true,
+  "showIf": {
+   "questionId": "e83ca461d52f1a2e",
+   "equals": [
+    "Yes",
+    "yes"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "e29e7826576b2bc8",
+  "label": "Does the applicant require coverage for Breach Response Services?",
+  "type": "yes_no",
+  "required": false,
+  "requiredIfShown": true,
+  "showIf": {
+   "questionId": "97f33d7eb7fce7e8",
+   "equals": [
+    "none"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "203485bddf666549",
+  "label": "Does the applicant require coverage for Crisis Management and Public Relations?",
+  "type": "yes_no",
+  "required": false,
+  "requiredIfShown": true,
+  "showIf": {
+   "questionId": "97f33d7eb7fce7e8",
+   "equals": [
+    "none"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "7d9590a94834e3b2",
+  "label": "Does the applicant require coverage for Service Fraud including Crypto-jacking?",
+  "type": "yes_no",
+  "required": false,
+  "requiredIfShown": true,
+  "showIf": {
+   "questionId": "97f33d7eb7fce7e8",
+   "equals": [
+    "none"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "4a7433aa9857e055",
+  "label": "Does the applicant require coverage for Funds Transfer Liability?",
+  "type": "yes_no",
+  "required": false,
+  "requiredIfShown": true,
+  "showIf": {
+   "questionId": "97f33d7eb7fce7e8",
+   "equals": [
+    "none"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "fec18cfbe15306f4",
+  "label": "Does the applicant require coverage for Proof of Loss Preparation Expenses?",
+  "type": "yes_no",
+  "required": false,
+  "requiredIfShown": true,
+  "showIf": {
+   "questionId": "97f33d7eb7fce7e8",
+   "equals": [
+    "none"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "99cbcd1cb4db1ca5",
+  "label": "Provide a complete list of all top-level domains for the insured to get immediate pricing. Not providing a domain will require a manual review resulting in a 24-hour delay.",
+  "type": "text",
+  "required": false,
+  "requiredIfShown": true,
+  "showIf": {
+   "questionId": "287f292c34e8f274",
+   "equals": [
+    "Yes",
+    "yes"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "d20a4731b095fbe2",
+  "label": "Will the applicant have an active technology errors and omissions policy concurrent with this insurance policy?",
+  "type": "yes_no",
+  "required": true,
+  "group": "cyber"
+ },
+ {
+  "id": "1efe98e865b17918",
+  "label": "Does insured enforce procedures to remove content (including third party content) that may infringe or violate any intellectual property or privacy right?",
+  "type": "yes_no",
+  "required": true,
+  "group": "cyber"
+ },
+ {
+  "id": "975a421214b91ab9",
+  "label": "Does the applicant enforce Multifactor Authentication on Corporate Network, Systems, and VPNs?",
+  "type": "select",
+  "options": [
+   {
+    "label": "Yes",
+    "value": "Yes"
+   },
+   {
+    "label": "No",
+    "value": "No"
+   },
+   {
+    "label": "No VPN allowed",
+    "value": "No VPN allowed"
+   }
+  ],
+  "required": true,
+  "group": "cyber"
+ },
+ {
+  "id": "805a3a9a2ac46c6b",
+  "label": "Does the applicant require coverage for Network and Information Security Liability?",
+  "type": "yes_no",
+  "required": false,
+  "requiredIfShown": true,
+  "showIf": {
+   "questionId": "97f33d7eb7fce7e8",
+   "equals": [
+    "none"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "6b7fa63830042072",
+  "label": "Does the applicant require coverage for Breach Response Costs?",
+  "type": "yes_no",
+  "required": false,
+  "requiredIfShown": true,
+  "showIf": {
+   "questionId": "97f33d7eb7fce7e8",
+   "equals": [
+    "none"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "b34a9fc77b0a7072",
+  "label": "Does the applicant require coverage for Ransomware and Cyber Extortion?",
+  "type": "yes_no",
+  "required": false,
+  "requiredIfShown": true,
+  "showIf": {
+   "questionId": "97f33d7eb7fce7e8",
+   "equals": [
+    "none"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "b90162ad31c8794a",
+  "label": "Does the applicant require coverage for Computer Replacement and Bricking?",
+  "type": "yes_no",
+  "required": false,
+  "requiredIfShown": true,
+  "showIf": {
+   "questionId": "97f33d7eb7fce7e8",
+   "equals": [
+    "none"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "bc8449818562083d",
+  "label": "Does the applicant require coverage for Bodily Injury and Property Damage - 1st Party?",
+  "type": "yes_no",
+  "required": false,
+  "requiredIfShown": true,
+  "showIf": {
+   "questionId": "97f33d7eb7fce7e8",
+   "equals": [
+    "none"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "5d8d416aed6db94f",
+  "label": "Does the applicant require coverage for Bodily Injury and Property Damage - 3rd Party?",
+  "type": "yes_no",
+  "required": false,
+  "requiredIfShown": true,
+  "showIf": {
+   "questionId": "97f33d7eb7fce7e8",
+   "equals": [
+    "none"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "d7f8dfd8816025dd",
+  "label": "How many PII or PHI records does the applicant collect, process, store, transmit, or have access to?",
+  "type": "select",
+  "options": [
+   {
+    "label": "<100,000",
+    "value": "<100,000"
+   },
+   {
+    "label": "100,000 - 500,000",
+    "value": "100,000 - 500,000"
+   },
+   {
+    "label": "500,000 - 1,000,000",
+    "value": "500,000 - 1,000,000"
+   },
+   {
+    "label": ">1,000,000",
+    "value": ">1,000,000"
+   }
+  ],
+  "required": false,
+  "requiredIfShown": true,
+  "showIf": {
+   "questionId": "933423a0385378d2",
+   "equals": [
+    "Yes",
+    "yes"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "638ce2993cf5ebe7",
+  "label": "Does insured have knowledge or information regarding any fact, circumstance, situation, or event that could reasonably give rise to a claim or loss under the proposed insurance?",
+  "type": "yes_no",
+  "required": true,
+  "group": "cyber"
+ },
+ {
+  "id": "656f5c88bf868382",
+  "label": "Please explain the circumstances and/or potential claims.",
+  "type": "text",
+  "required": false,
+  "requiredIfShown": true,
+  "showIf": {
+   "questionId": "638ce2993cf5ebe7",
+   "equals": [
+    "Yes",
+    "yes"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "7f4850bea64dfefc",
+  "label": "Does the applicant require coverage for Regulatory Defense and Penalties?",
+  "type": "yes_no",
+  "required": false,
+  "requiredIfShown": true,
+  "showIf": {
+   "questionId": "97f33d7eb7fce7e8",
+   "equals": [
+    "none"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "17068b6dd3383c9c",
+  "label": "Does the applicant require coverage for Direct and Contingent Business Interruption, and Extra Expenses from Security Failure and Systems Failure?",
+  "type": "yes_no",
+  "required": false,
+  "requiredIfShown": true,
+  "showIf": {
+   "questionId": "97f33d7eb7fce7e8",
+   "equals": [
+    "none"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "7361bf0f0a3be568",
+  "label": "Does the applicant require coverage for Digital Asset Restoration?",
+  "type": "yes_no",
+  "required": false,
+  "requiredIfShown": true,
+  "showIf": {
+   "questionId": "97f33d7eb7fce7e8",
+   "equals": [
+    "none"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "91e8f12d72d43648",
+  "label": "Does the applicant require coverage for Invoice Manipulation?",
+  "type": "yes_no",
+  "required": false,
+  "requiredIfShown": true,
+  "showIf": {
+   "questionId": "97f33d7eb7fce7e8",
+   "equals": [
+    "none"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "97f33d7eb7fce7e8",
+  "label": "Please select the coverage bundle you want or choose custom coverages individually - \nThe Most popular bundle includes a set of coverages recommended by Coalition\nThe Comprehensive bundle includes all the available coverages",
+  "type": "select",
+  "options": [
+   {
+    "label": "Most popular bundle",
+    "value": "Most popular bundle"
+   },
+   {
+    "label": "Comprehensive bundle",
+    "value": "Comprehensive bundle"
+   },
+   {
+    "label": "Custom coverages",
+    "value": "Custom coverages"
+   }
+  ],
+  "required": true,
+  "group": "cyber"
+ },
+ {
+  "id": "287f292c34e8f274",
+  "label": "Does the applicant have any active domains? If not, please confirm that the applicant has no domains to enable immediate pricing.",
+  "type": "yes_no",
+  "required": true,
+  "group": "cyber"
+ },
+ {
+  "id": "634805d6e9d06770",
+  "label": "What is the estimated annual volume of payment card transactions (credit cards, debit cards, etc.)?",
+  "type": "select",
+  "options": [
+   {
+    "label": "<100,000",
+    "value": "<100,000"
+   },
+   {
+    "label": "100,000 - 500,000",
+    "value": "100,000 - 500,000"
+   },
+   {
+    "label": "500,000 - 1,000,000",
+    "value": "500,000 - 1,000,000"
+   },
+   {
+    "label": ">1,000,000",
+    "value": ">1,000,000"
+   }
+  ],
+  "required": false,
+  "requiredIfShown": true,
+  "showIf": {
+   "questionId": "884bf295bf1fe16c",
+   "equals": [
+    "Yes",
+    "yes"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "6553f1deeabd94ea",
+  "label": "Does the applicant require coverage for PCI Fines and Assessments?",
+  "type": "yes_no",
+  "required": false,
+  "requiredIfShown": true,
+  "showIf": {
+   "questionId": "97f33d7eb7fce7e8",
+   "equals": [
+    "none"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "45403b5d334a0c64",
+  "label": "Does the applicant enforce multi-factor authentication (MFA) for email accounts?",
+  "type": "select",
+  "options": [
+   {
+    "label": "Yes",
+    "value": "Yes"
+   },
+   {
+    "label": "No",
+    "value": "No"
+   },
+   {
+    "label": "No remote access allowed",
+    "value": "No remote access allowed"
+   }
+  ],
+  "required": true,
+  "group": "cyber"
+ },
+ {
+  "id": "236966157a90dad8",
+  "label": "Does the applicant enforce multi-factor authentication (MFA) for remote access?",
+  "type": "select",
+  "options": [
+   {
+    "label": "Yes",
+    "value": "Yes"
+   },
+   {
+    "label": "No",
+    "value": "No"
+   },
+   {
+    "label": "No remote access allowed",
+    "value": "No remote access allowed"
+   }
+  ],
+  "required": true,
+  "group": "cyber"
+ },
+ {
+  "id": "682779f5b13e52c4",
+  "label": "Does the applicant enforce multi-factor authentication (MFA) for other privileged accounts?",
+  "type": "select",
+  "options": [
+   {
+    "label": "Yes",
+    "value": "Yes"
+   },
+   {
+    "label": "No",
+    "value": "No"
+   },
+   {
+    "label": "On administrative accounts and all cloud services where supported",
+    "value": "On administrative accounts and all cloud services where supported"
+   }
+  ],
+  "required": true,
+  "group": "cyber"
+ },
+ {
+  "id": "660b313e795ed649",
+  "label": "Is the Insured engaged in any of the following businesses? Select all that apply",
+  "type": "select",
+  "options": [
+   {
+    "label": "Adult Content",
+    "value": "Adult Content"
+   },
+   {
+    "label": "Cryptocurrency or Blockchain",
+    "value": "Cryptocurrency or Blockchain"
+   },
+   {
+    "label": "Gambling",
+    "value": "Gambling"
+   },
+   {
+    "label": "Managed Service Provider (MSP), Managed Security Service Provider (MSSP), or remote network administration services provider",
+    "value": "Managed Service Provider (MSP), Managed Security Service Provider (MSSP), or remote network administration services provider"
+   },
+   {
+    "label": "Payment Processing",
+    "value": "Payment Processing"
+   },
+   {
+    "label": "NA",
+    "value": "NA"
+   }
+  ],
+  "required": true,
+  "group": "cyber"
+ },
+ {
+  "id": "2ab6d85a3975565d",
+  "label": "Does the applicant require coverage for Reputation Repair?",
+  "type": "yes_no",
+  "required": false,
+  "requiredIfShown": true,
+  "showIf": {
+   "questionId": "97f33d7eb7fce7e8",
+   "equals": [
+    "none"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "74380b0c30c59843",
+  "label": "Does the applicant require coverage for Reputational Harm Loss?",
+  "type": "yes_no",
+  "required": false,
+  "requiredIfShown": true,
+  "showIf": {
+   "questionId": "203485bddf666549",
+   "equals": [
+    "Yes",
+    "yes"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "1bf8f1e4794adce6",
+  "label": "Does the applicant require coverage for Pollution?",
+  "type": "yes_no",
+  "required": false,
+  "requiredIfShown": true,
+  "showIf": {
+   "questionId": "97f33d7eb7fce7e8",
+   "equals": [
+    "none"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "fa336a8ef4eec899",
+  "label": "Does the applicant require coverage for Court Attendance?",
+  "type": "yes_no",
+  "required": false,
+  "requiredIfShown": true,
+  "showIf": {
+   "questionId": "97f33d7eb7fce7e8",
+   "equals": [
+    "none"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "00d244e7710d0f8c",
+  "label": "Does the applicant require coverage for Criminal Reward?",
+  "type": "yes_no",
+  "required": false,
+  "requiredIfShown": true,
+  "showIf": {
+   "questionId": "97f33d7eb7fce7e8",
+   "equals": [
+    "none"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "b578c63bb9ba3afc",
+  "label": "Does the applicant require coverage for Phishing?",
+  "type": "yes_no",
+  "required": false,
+  "requiredIfShown": true,
+  "showIf": {
+   "questionId": "97f33d7eb7fce7e8",
+   "equals": [
+    "none"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "e8b99993f8200791",
+  "label": "Please provide the estimated annual volume of these transactions, which are greater than 1 million.",
+  "type": "text",
+  "required": false,
+  "requiredIfShown": true,
+  "showIf": {
+   "questionId": "634805d6e9d06770",
+   "equals": [
+    "GreaterThan1M",
+    "greaterthan1m"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "721b43357d48b898",
+  "label": "Please specify the approximate number of PII or PHI records, greater than 1 million, that the applicant collects, processes, stores, transmits, or has access to.",
+  "type": "text",
+  "required": false,
+  "requiredIfShown": true,
+  "showIf": {
+   "questionId": "d7f8dfd8816025dd",
+   "equals": [
+    "GreaterThan1M",
+    "greaterthan1m"
+   ]
+  },
+  "group": "cyber"
+ },
+ {
+  "id": "010b68cf4b37a075",
+  "label": "Underwriting Statement for Cyber Insurance - TRIA Compliance\n\nThis policy adheres to the terms and conditions set forth by the Terrorism Risk Insurance Act. In the event of a certified act of terrorism, as defined by the TRIA, the policy will respond in accordance with the Act's provisions.",
+  "type": "yes_no",
+  "required": true,
+  "group": "cyber"
+ },
+ {
+  "id": "claimHistory",
+  "label": "How many cyber or privacy claims have you had in the past 3 years?",
+  "type": "number",
+  "required": true,
+  "group": "Cyber Risk Profile"
+ },
+ {
+  "id": "isSecurityOfficer",
+  "label": "Do you have a dedicated security officer or CISO?",
+  "type": "yes_no",
+  "required": true,
+  "group": "Cyber Risk Profile"
+ },
+ {
+  "id": "isSecurityTraining",
+  "label": "Do employees complete security awareness training at least annually?",
+  "type": "yes_no",
+  "required": true,
+  "group": "Cyber Risk Profile"
+ },
+ {
+  "id": "useEncryption",
+  "label": "Do you encrypt sensitive data at rest and in transit?",
+  "type": "yes_no",
+  "required": true,
+  "group": "Cyber Risk Profile"
+ },
+ {
+  "id": "useCloudStorage",
+  "label": "Do you store sensitive data with a cloud storage provider?",
+  "type": "yes_no",
+  "required": true,
+  "group": "Cyber Risk Profile"
+ },
+ {
+  "id": "isAuthenticatingFundTransferRequests",
+  "label": "Do you authenticate fund transfer requests before sending money?",
+  "type": "yes_no",
+  "required": true,
+  "group": "Funds Transfer Controls"
+ },
+ {
+  "id": "isPreventingUnauthorizedWireTransfers",
+  "label": "Do you have controls to prevent unauthorized wire transfers?",
+  "type": "yes_no",
+  "required": true,
+  "group": "Funds Transfer Controls"
+ },
+ {
+  "id": "isVerifyingBankAccounts",
+  "label": "Do you verify bank account changes through a separate channel before paying?",
+  "type": "yes_no",
+  "required": true,
+  "group": "Funds Transfer Controls"
+ },
+ {
+  "id": "backupFrequency",
+  "label": "How often do you back up critical systems and data?",
+  "type": "select",
+  "options": [
+   {
+    "label": "Weekly",
+    "value": "Weekly"
+   },
+   {
+    "label": "Monthly",
+    "value": "Monthly"
+   },
+   {
+    "label": "Quarterly",
+    "value": "Quarterly"
+   },
+   {
+    "label": "Six months",
+    "value": "Six months"
+   },
+   {
+    "label": "Never",
+    "value": "Never"
+   }
+  ],
+  "required": true,
+  "group": "Resilience"
+ },
+ {
+  "id": "businessContinuityMeasures",
+  "label": "Which business continuity measures do you have in place?",
+  "type": "select",
+  "options": [
+   {
+    "label": "Incident response plan",
+    "value": "Incident response plan"
+   },
+   {
+    "label": "Offsite or immutable backups",
+    "value": "Offsite or immutable backups"
+   },
+   {
+    "label": "Tested disaster recovery plan",
+    "value": "Tested disaster recovery plan"
+   },
+   {
+    "label": "Multi-factor authentication",
+    "value": "Multi-factor authentication"
+   },
+   {
+    "label": "Endpoint detection and response (EDR)",
+    "value": "Endpoint detection and response (EDR)"
+   }
+  ],
+  "required": false,
+  "group": "Resilience"
+ },
+ {
+  "id": "incidentResponsePlan",
+  "label": "Do you have a tested incident response plan?",
+  "type": "yes_no",
+  "required": true,
+  "group": "Cyber Risk Profile"
+ },
+ {
+  "id": "mfaAuthentication",
+  "label": "Do you enforce multi-factor authentication (MFA)?",
+  "type": "yes_no",
+  "required": true,
+  "group": "Access Controls"
+ },
+ {
+  "id": "mfaEmail",
+  "label": "Is MFA enforced on email?",
+  "type": "yes_no",
+  "required": false,
+  "group": "Access Controls",
+  "showIf": {
+   "questionId": "mfaAuthentication",
+   "equals": [
+    "yes"
+   ]
+  }
+ },
+ {
+  "id": "mfaRemoteAccess",
+  "label": "Is MFA enforced on remote network access (VPN/RDP)?",
+  "type": "yes_no",
+  "required": false,
+  "group": "Access Controls",
+  "showIf": {
+   "questionId": "mfaAuthentication",
+   "equals": [
+    "yes"
+   ]
+  }
+ },
+ {
+  "id": "mfaCloudDeployments",
+  "label": "Is MFA enforced on cloud deployments?",
+  "type": "yes_no",
+  "required": false,
+  "group": "Access Controls",
+  "showIf": {
+   "questionId": "mfaAuthentication",
+   "equals": [
+    "yes"
+   ]
+  }
+ },
+ {
+  "id": "mfaMissionCriticalSystems",
+  "label": "Is MFA enforced on mission-critical systems?",
+  "type": "yes_no",
+  "required": false,
+  "group": "Access Controls",
+  "showIf": {
+   "questionId": "mfaAuthentication",
+   "equals": [
+    "yes"
+   ]
+  }
+ },
+ {
+  "id": "backupFrequencyTested",
+  "label": "Are your backups tested by restoring from them?",
+  "type": "yes_no",
+  "required": false,
+  "group": "Resilience",
+  "showIf": {
+   "questionId": "backupFrequency",
+   "equals": [
+    "Weekly",
+    "Monthly",
+    "Quarterly",
+    "Six months"
+   ]
+  }
+ },
+ {
+  "id": "backupFrequencyEncrypted",
+  "label": "Are your backups encrypted?",
+  "type": "yes_no",
+  "required": false,
+  "group": "Resilience",
+  "showIf": {
+   "questionId": "backupFrequency",
+   "equals": [
+    "Weekly",
+    "Monthly",
+    "Quarterly",
+    "Six months"
+   ]
+  }
+ },
+ {
+  "id": "backupFrequencySeparate",
+  "label": "Are backups stored separately (offline or immutable) from production?",
+  "type": "yes_no",
+  "required": false,
+  "group": "Resilience",
+  "showIf": {
+   "questionId": "backupFrequency",
+   "equals": [
+    "Weekly",
+    "Monthly",
+    "Quarterly",
+    "Six months"
+   ]
+  }
+ },
+ {
+  "id": "patchingFrequency",
+  "label": "How often do you apply security patches?",
+  "type": "select",
+  "options": [
+   {
+    "label": "Weekly",
+    "value": "Weekly"
+   },
+   {
+    "label": "Monthly",
+    "value": "Monthly"
+   },
+   {
+    "label": "Quarterly",
+    "value": "Quarterly"
+   },
+   {
+    "label": "Six months",
+    "value": "Six months"
+   },
+   {
+    "label": "Never",
+    "value": "Never"
+   }
+  ],
+  "required": true,
+  "group": "Resilience"
+ },
+ {
+  "id": "lossInBusinessIncome",
+  "label": "Have you had a loss of business income from downtime in the past 3 years?",
+  "type": "yes_no",
+  "required": true,
+  "group": "Resilience"
+ },
+ {
+  "id": "pastCyberIncident",
+  "label": "Have you experienced a cyber incident in the past 3 years?",
+  "type": "yes_no",
+  "required": true,
+  "group": "History"
+ },
+ {
+  "id": "pastCyberIncidentDetails",
+  "label": "If yes, describe the incident (date, type, impact, remediation).",
+  "type": "text",
+  "required": false,
+  "group": "History",
+  "showIf": {
+   "questionId": "pastCyberIncident",
+   "equals": [
+    "yes"
+   ]
+  }
+ },
+ {
+  "id": "securityBreachRequiringNotification",
+  "label": "In the past 3 years, have you had a breach requiring notification to individuals or regulators?",
+  "type": "yes_no",
+  "required": true,
+  "group": "History"
+ },
+ {
+  "id": "civilOrCriminalAction",
+  "label": "Are you aware of any civil or criminal action related to your data or security practices?",
+  "type": "yes_no",
+  "required": true,
+  "group": "History"
+ },
+ {
+  "id": "pendingLitigation",
+  "label": "Do you have any pending litigation?",
+  "type": "yes_no",
+  "required": true,
+  "group": "History"
+ },
+ {
+  "id": "dmzSeparation",
+  "label": "Do you segregate your network (e.g. a DMZ separating public-facing systems)?",
+  "type": "yes_no",
+  "required": false,
+  "group": "Access Controls"
+ },
+ {
+  "id": "testedFullFailover",
+  "label": "Have you tested a full failover or disaster-recovery scenario?",
+  "type": "yes_no",
+  "required": false,
+  "group": "Resilience"
+ },
+ {
+  "id": "thirdPartySecurityAgreement",
+  "label": "Do you require security commitments from key vendors by contract?",
+  "type": "yes_no",
+  "required": false,
+  "group": "Access Controls"
+ }
+]

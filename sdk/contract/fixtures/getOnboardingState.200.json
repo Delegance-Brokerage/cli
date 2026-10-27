@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "traceId": "4f6d6cff-5f9a-4b6f-8f8d-5fa6f6a7b8c9",
+  "data": {
+    "state": "awaiting_verification",
+    "verified": false,
+    "capabilities": ["create_company", "poll_onboarding", "request_verification"],
+    "verification": { "challengeIssued": true, "sentTo": "o***@acme.com" },
+    "documents": { "total": 0, "processing": 0, "processed": 0, "failed": 0 }
+  }
+}

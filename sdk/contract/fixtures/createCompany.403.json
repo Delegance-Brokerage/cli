@@ -1,0 +1,6 @@
+{
+  "error": "Forbidden",
+  "reason": "tenant_key_cannot_create",
+  "message": "A tenant API key may not create companies. Use the bootstrap-create path (unauthenticated or a delegated credential).",
+  "traceId": "0b2f28bb-1b56-4d2b-8b4f-1b62b2c3d4e5"
+}

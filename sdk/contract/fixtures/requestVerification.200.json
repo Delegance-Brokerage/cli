@@ -1,0 +1,9 @@
+{
+  "success": true,
+  "traceId": "3e5c5bee-4e89-4a5e-9e7c-4e95e5f6a7b8",
+  "data": {
+    "state": "awaiting_verification",
+    "method": "email_link",
+    "sentTo": "o***@acme.com"
+  }
+}

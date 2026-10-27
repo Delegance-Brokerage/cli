@@ -1,0 +1,75 @@
+{
+  "name": "@delegance/sdk",
+  "version": "0.3.1",
+  "description": "Get commercial insurance quotes from your code: TypeScript SDK for the Delegance API (instant quotes, signup, policies, certificates)",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "prepublishOnly": "npm run build && npm run test",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "delegance",
+    "insurance",
+    "commercial-insurance",
+    "insurance-quote",
+    "brokerage",
+    "sdk",
+    "api",
+    "ai-agent",
+    "mcp"
+  ],
+  "author": "Delegance Inc.",
+  "license": "MIT",
+  "homepage": "https://portal.delegancebrokerage.com/docs/sdk",
+  "bugs": {
+    "email": "support@delegancebrokerage.com"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "tsup": "^9.0.0",
+    "typescript": "^6",
+    "vitest": "^5.0.5",
+    "eslint": "^10.13.0",
+    "@typescript-eslint/eslint-plugin": "~8.72.0",
+    "@typescript-eslint/parser": "~8.72.0"
+  },
+  "peerDependencies": {
+    "typescript": ">=4.7.0"
+  },
+  "peerDependenciesMeta": {
+    "typescript": {
+      "optional": true
+    }
+  },
+  "overrides": {
+    "esbuild": "^0.28.1"
+  }
+}

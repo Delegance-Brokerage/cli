@@ -1,0 +1,6 @@
+{
+  "error": "Forbidden",
+  "reason": "tenant_unverified",
+  "message": "This tenant has not completed human verification. Call POST /api/v1/onboarding/verification and have a human open the emailed link.",
+  "traceId": "5a7e7d00-6a0b-4c7a-9a9e-6ab7a7b8c9d0"
+}

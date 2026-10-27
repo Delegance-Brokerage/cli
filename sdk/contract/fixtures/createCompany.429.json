@@ -1,0 +1,6 @@
+{
+  "error": "Too Many Requests",
+  "reason": "rate_limited",
+  "message": "Bootstrap-create daily cap exceeded. Retry tomorrow or contact support.",
+  "traceId": "1c3a39cc-2c67-4e3c-9c5a-2c73c3d4e5f6"
+}

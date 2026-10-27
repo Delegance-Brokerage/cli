@@ -1,0 +1,76 @@
+{
+  "name": "@delegance/cli",
+  "version": "0.3.4",
+  "description": "Get commercial insurance quotes from your terminal: the Delegance CLI for quotes, policies, and certificates. Works with AI coding agents.",
+  "bin": {
+    "delegance": "dist/bin/delegance.js"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts src/bin/delegance.ts --format cjs --dts --clean",
+    "dev": "tsup src/index.ts src/bin/delegance.ts --format cjs --dts --watch",
+    "start": "node dist/bin/delegance.js",
+    "prepublishOnly": "npm run build && npm test && node scripts/sdk-dep.cjs check-published",
+    "prepack": "node scripts/sdk-dep.cjs publish",
+    "postpack": "node scripts/sdk-dep.cjs local-after-pack",
+    "postpublish": "node scripts/sdk-dep.cjs local",
+    "test": "vitest run",
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "delegance",
+    "insurance",
+    "commercial-insurance",
+    "insurance-quote",
+    "brokerage",
+    "cli",
+    "command-line",
+    "cli-insurance-quote",
+    "ai-agent",
+    "mcp"
+  ],
+  "author": "Delegance LLC",
+  "license": "MIT",
+  "homepage": "https://portal.delegancebrokerage.com/docs/cli",
+  "bugs": {
+    "email": "support@delegancebrokerage.com"
+  },
+  "dependencies": {
+    "@delegance/sdk": "file:../sdk",
+    "chalk": "^5.3.0",
+    "cli-table3": "^0.6.3",
+    "commander": "^12.0.0",
+    "conf": "^12.0.0",
+    "figures": "^6.0.1",
+    "glob": "^13.0.0",
+    "inquirer": "^9.2.12",
+    "ora": "^9.4.1"
+  },
+  "devDependencies": {
+    "@types/glob": "^9.0.0",
+    "@types/inquirer": "^9.0.7",
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "~6.15.0",
+    "@typescript-eslint/parser": "~6.15.0",
+    "eslint": "^8.55.0",
+    "tsup": "^8.0.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.12"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "overrides": {
+    "esbuild": "^0.28.1"
+  }
+}

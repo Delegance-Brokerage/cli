@@ -1,0 +1,17 @@
+{
+  "success": true,
+  "data": {
+    "account": "complete",
+    "company": "complete",
+    "companyFull": "incomplete",
+    "billing": "sandbox",
+    "quoteReady": false,
+    "sandbox": true,
+    "nextStep": {
+      "action": "complete_company",
+      "fields": ["fein", "street_address", "city", "state", "zip_code"],
+      "url": "/portal/settings/company"
+    }
+  },
+  "traceId": "aafcd255-1f5a-4bcf-8f4d-1facfcf2a3b5"
+}

@@ -1,0 +1,13 @@
+{
+  "success": true,
+  "traceId": "5a1e18aa-9a45-4c1a-9a3e-0a51a1b2c3d4",
+  "isExisting": false,
+  "company": {
+    "id": "c0ffee00-0000-4000-8000-000000000001",
+    "name": "Acme Manufacturing LLC"
+  },
+  "onboarding": {
+    "state": "created"
+  },
+  "bootstrapKey": "dlg_bootstr1_sk_abcdefghijklmnopqrstuvwxyz012345"
+}

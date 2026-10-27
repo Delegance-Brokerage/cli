@@ -1,0 +1,1166 @@
+openapi: 3.1.0
+info:
+  title: Delegance API
+  version: 1.1.0
+  description: >
+    Canonical public v1 contract. Onboarding: an agent can create a company,
+    request the human verification challenge, poll onboarding state, and
+    (after a human verifies) upload documents and proceed to quoting.
+    Commerce (H2b): CLI signup, terms, instant quotes, bind requests,
+    payments, claims and certificates of insurance, as the SDK and CLI call
+    them. Every error answer from an API-key route carries the V1Error
+    envelope: the human `error` string plus a stable `code` and `retryable`;
+    a 429 or 503 carries Retry-After. An operation marked
+    `x-conformance: handler` is validated by a jest suite that runs the real
+    route handler (app/api/v1/__tests__/openapi-conformance/). A write is
+    safe to resend only when its operation is marked
+    `x-delegance-idempotent: true`; no commerce write carries that mark yet.
+servers:
+  - url: https://portal.delegancebrokerage.com
+    description: Interim canonical host. Publish gate, see DEFAULT_BASE_URL in sdk/src/utils/http.ts.
+security:
+  - apiKey: []
+components:
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      description: "Delegance API key: Bearer dlg_{prefix}_sk_{secret}"
+  schemas:
+    OnboardingState:
+      type: string
+      enum: [created, awaiting_verification, documents_pending, processing, ready]
+    OnboardingStateResponse:
+      type: object
+      required: [success, data, traceId]
+      properties:
+        success: { type: boolean }
+        traceId: { type: string }
+        data:
+          type: object
+          required: [state, verified, capabilities]
+          properties:
+            state: { $ref: '#/components/schemas/OnboardingState' }
+            verified: { type: boolean }
+            capabilities:
+              type: array
+              items: { type: string }
+            verification:
+              type: object
+              properties:
+                challengeIssued: { type: boolean }
+                sentTo:
+                  type: [string, 'null']
+                  description: masked email
+            documents:
+              type: object
+              properties:
+                total: { type: integer }
+                processing: { type: integer }
+                processed: { type: integer }
+                failed: { type: integer, description: 'terminal failures, not in flight' }
+    CreateCompanyRequest:
+      type: object
+      required: [name, industry, companySize, contactEmail]
+      properties:
+        name: { type: string, maxLength: 255 }
+        industry: { type: string, maxLength: 100 }
+        companySize:
+          type: string
+          enum: ['1', '2-10', '11-25', '26-50', '51-100', '100-499', '500+']
+        contactEmail: { type: string, format: email }
+        externalId:
+          type: string
+          maxLength: 255
+          description: >
+            Business-level dedup identifier (the caller's own id for this
+            company). NOT an idempotency mechanism; request idempotency is
+            the Idempotency-Key header.
+    CreateCompanyResponse:
+      type: object
+      required: [success, company, traceId]
+      properties:
+        success: { type: boolean }
+        traceId: { type: string }
+        isExisting: { type: boolean }
+        company:
+          type: object
+          required: [id, name]
+          properties:
+            id: { type: string, format: uuid }
+            name: { type: string }
+        onboarding:
+          type: object
+          properties:
+            state: { $ref: '#/components/schemas/OnboardingState' }
+        bootstrapKey:
+          type: [string, 'null']
+          description: >
+            Tenant-bound API key with scope [bootstrap]. Returned exactly once
+            (show-once); an Idempotency-Key replay returns null here plus a
+            bootstrapKeyReplay marker. Callable endpoints pre-verification:
+            onboarding state/status polling and the verification challenge
+            ONLY. A bootstrap key cannot create companies. All other tenant
+            writes require human verification.
+        bootstrapKeyReplay:
+          type: string
+          enum: [redacted]
+          description: >
+            Present only on an Idempotency-Key replay. The plaintext key is
+            never stored or re-shown; use the verification/recovery path to
+            obtain working credentials if the original response was lost.
+    VerificationChallengeResponse:
+      type: object
+      required: [success, data, traceId]
+      properties:
+        success: { type: boolean }
+        traceId: { type: string }
+        data:
+          type: object
+          required: [state, method, sentTo]
+          properties:
+            state: { $ref: '#/components/schemas/OnboardingState' }
+            method: { type: string, enum: [email_link] }
+            sentTo: { type: string, description: masked email }
+    ErrorResponse:
+      type: object
+      required: [error, traceId]
+      properties:
+        error: { type: string }
+        code:
+          type: string
+          description: Additive (H2b). Present on API-key routes; see V1ErrorCode.
+        retryable:
+          type: boolean
+          description: Additive (H2b). True when the same request may succeed later.
+        reason:
+          type: string
+          description: >
+            Machine-readable failure code, e.g. tenant_unverified,
+            insufficient_scope, rate_limited, idempotency_conflict,
+            idempotency_in_progress. Matches exactly what the middleware
+            returns.
+        message: { type: string }
+        traceId: { type: string }
+    V1ErrorCode:
+      type: string
+      description: >
+        Stable machine code on every v1 error answer (H2b). Closed union; a
+        client switches on it, never on the `error` text. Mirrors
+        V1_ERROR_CODES in app/api/v1/middleware.ts (a test pins the two).
+        A few older routes outside the commerce set keep a route-specific
+        `code` they set before the envelope existed.
+      enum:
+        - invalid_request
+        - unauthenticated
+        - forbidden
+        - not_found
+        - conflict
+        - idempotency_in_progress
+        - idempotency_mismatch
+        - payload_too_large
+        - client_upgrade_required
+        - rate_limited
+        - not_available
+        - upstream_unavailable
+        - upstream_timeout
+        - internal
+    V1Error:
+      type: object
+      description: >
+        The v1 error envelope. `error` is the human string every older client
+        reads and stays. `reason` is the route's finer refusal (for example
+        key_not_user_bound, in_progress, gate_not_acknowledged) and keeps its
+        meaning. Extra fields a route documents (portalUrl, questions,
+        policyIds) may appear beside these.
+      required: [error, code, retryable]
+      properties:
+        error: { type: string }
+        code: { $ref: '#/components/schemas/V1ErrorCode' }
+        retryable:
+          type: boolean
+          description: >
+            True when sending the same request again later may succeed
+            (in-flight idempotency claim, rate limit, upstream outage). A 500
+            is false: its outcome is unknown.
+        reason: { type: string }
+        message: { type: string }
+        traceId: { type: string }
+    InstantQuestion:
+      type: object
+      required: [id, label, type, required]
+      properties:
+        id: { type: string }
+        label: { type: string }
+        type: { type: string }
+        required: { type: boolean }
+        options:
+          type: array
+          items:
+            type: object
+            required: [value, label]
+            properties:
+              value: { type: string }
+              label: { type: string }
+    InstantSessionResponse:
+      type: object
+      required: [success, data, traceId]
+      properties:
+        success: { const: true }
+        traceId: { type: string }
+        data:
+          type: object
+          required: [submissionId, sessionVersion, decision, eligibleCarriers, questions]
+          properties:
+            submissionId: { type: string }
+            sessionVersion: { type: string }
+            decision: { type: string }
+            eligibleCarriers:
+              type: array
+              items:
+                type: object
+                required: [carrierId, name]
+                properties:
+                  carrierId: { type: string }
+                  name: { type: string }
+            questions:
+              type: array
+              items: { $ref: '#/components/schemas/InstantQuestion' }
+            wcMarket: { $ref: '#/components/schemas/WcMarket' }
+    WcMarket:
+      type: object
+      description: >-
+        Present only when workers' comp was requested. The insured's states
+        and each state's workers' comp market. When every state is
+        monopolistic (only the state fund writes WC), no private WC price is
+        requested: privateWcQuote is skipped, reason is
+        monopolistic_state_fund_only, and WC goes to a broker for the state
+        fund and Stop Gap Employers Liability. When some state is
+        monopolistic and another is not, or the states could not be read,
+        privateWcQuote is broker: a broker quotes private WC for the private
+        states, since an instant quote cannot be limited to them.
+      required: [states, privateWcQuote, reason, message, stopGapElStates, unknownStates]
+      properties:
+        states:
+          type: array
+          items:
+            type: object
+            required: [state, stateName, marketType, privateWcAllowed, stopGapElNeeded, stateFund, summary]
+            properties:
+              state: { type: string }
+              stateName: { type: string }
+              marketType: { type: string, enum: [monopolistic_state_fund, competitive_state_fund, private] }
+              privateWcAllowed: { type: boolean }
+              stopGapElNeeded: { type: boolean }
+              stateFund:
+                type: [object, 'null']
+                required: [name, shortName, url]
+                properties:
+                  name: { type: string }
+                  shortName: { type: string }
+                  url: { type: string }
+              summary: { type: string }
+        privateWcQuote: { type: string, enum: [requested, skipped, broker] }
+        reason: { type: [string, 'null'] }
+        message: { type: [string, 'null'] }
+        stopGapElStates: { type: array, items: { type: string } }
+        unknownStates: { type: array, items: { type: string } }
+    InstantSubmitResponse:
+      type: object
+      required: [success, data, traceId]
+      properties:
+        success: { const: true }
+        traceId: { type: string }
+        data:
+          type: object
+          required: [quotes, partialFailures, acordCoverages, status]
+          properties:
+            status: { type: string, enum: [submitted, acord_pending, no_carriers] }
+            quotes:
+              type: array
+              items:
+                type: object
+                required: [carrierId, carrierName, premium, status]
+                properties:
+                  carrierId: { type: string }
+                  carrierName: { type: string }
+                  premium: { type: [number, 'null'] }
+                  status: { type: string }
+            partialFailures:
+              type: array
+              items:
+                type: object
+                required: [carrierId, reason]
+                properties:
+                  carrierId: { type: string }
+                  reason: { type: string }
+                  missing: { type: string }
+            acordCoverages:
+              type: array
+              items: { type: string }
+            brokerTaskId: { type: string }
+            replaceNotice: { type: string }
+    InstantCarrierQuote:
+      type: object
+      required: [carrierId, carrierName, state, premium, bindable]
+      properties:
+        opportunityId: { type: string }
+        carrierId: { type: string }
+        carrierName: { type: string }
+        coverage: { type: [string, 'null'] }
+        state: { type: string }
+        marketStatus: { type: string }
+        premium: { type: [number, 'null'] }
+        quoteNumber: { type: [string, 'null'] }
+        bindable: { type: [boolean, 'null'] }
+        limits: { type: [string, 'null'] }
+        deductible: { type: [number, 'null'] }
+        resultStatus: { type: [string, 'null'] }
+        message: { type: [string, 'null'] }
+        withheld: { type: boolean }
+    InstantQuoteStatusResponse:
+      type: object
+      required: [success, data, traceId]
+      properties:
+        success: { const: true }
+        traceId: { type: string }
+        data:
+          type: object
+          required: [submissionId, coverages, expiresAt, submitted, submitStatus, carrierQuotes, allCarriersResolved, awaitingBrokerReviewCount]
+          properties:
+            submissionId: { type: string }
+            coverages:
+              type: array
+              items: { type: string }
+            expiresAt: { type: [string, 'null'] }
+            effectiveDate: { type: [string, 'null'] }
+            submitted: { type: boolean }
+            submitStatus: { type: string, enum: [not_submitted, in_progress, completed] }
+            carrierQuotes:
+              type: array
+              items: { $ref: '#/components/schemas/InstantCarrierQuote' }
+            withheldCarriers:
+              type: array
+              items:
+                type: object
+                required: [carrierId, carrierName, status, needs, message]
+                properties:
+                  carrierId: { type: string }
+                  carrierName: { type: string }
+                  status: { type: string, enum: [needs_info, withheld] }
+                  needs:
+                    type: array
+                    items: { type: string }
+                  message: { type: string }
+            allCarriersResolved: { type: boolean }
+            awaitingBrokerReviewCount: { type: integer }
+            brokerReview:
+              type: [object, 'null']
+              required: [taskId, status, createdAt]
+              properties:
+                taskId: { type: string }
+                status: { type: string }
+                createdAt: { type: string }
+    BindRequest:
+      type: object
+      required: [opportunityId]
+      properties:
+        opportunityId: { type: string, description: 'From GET /api/v1/quotes/instant/{submissionId}' }
+        attest: { type: boolean, description: Fast bind (CLI_FAST_BIND_TIER_A_ENABLED) only }
+        stepUpId: { type: string }
+        code: { type: string }
+    BindResponse:
+      type: object
+      required: [success, data, traceId]
+      properties:
+        success: { const: true }
+        traceId: { type: string }
+        data:
+          type: object
+          required: [bindRequestId, status, carrierName, coverage, premium, existing, next]
+          properties:
+            bindRequestId: { type: string }
+            status: { type: string }
+            carrierName: { type: string }
+            coverage: { type: string }
+            premium: { type: [number, 'null'] }
+            existing: { type: boolean }
+            next: { type: string }
+            tier: { type: string, enum: [A, C] }
+            reasons:
+              type: array
+              items: { type: string }
+            checkoutUrl: { type: string }
+            financing: { type: object }
+    BindStepUpRequired:
+      type: object
+      required: [stepUpRequired, stepUpId, channel, sentTo]
+      properties:
+        stepUpRequired: { const: true }
+        stepUpId: { type: string }
+        channel: { type: string, enum: [email] }
+        sentTo: { type: string, description: masked email }
+        expiresAt: { type: [string, 'null'] }
+        traceId: { type: string }
+    PaymentRequest:
+      type: object
+      required: [id, amount, currency, description, status, createdAt, payable]
+      properties:
+        id: { type: string }
+        amount: { type: integer, description: cents }
+        currency: { type: string }
+        description: { type: [string, 'null'] }
+        status: { type: string }
+        dueDate: { type: string }
+        createdAt: { type: string }
+        payable: { type: boolean }
+    PaymentListResponse:
+      type: object
+      required: [success, data, traceId]
+      properties:
+        success: { const: true }
+        traceId: { type: string }
+        data:
+          type: object
+          required: [payments]
+          properties:
+            payments:
+              type: array
+              items: { $ref: '#/components/schemas/PaymentRequest' }
+    CheckoutResponse:
+      type: object
+      required: [success, data, traceId]
+      properties:
+        success: { const: true }
+        traceId: { type: string }
+        data:
+          type: object
+          required: [checkoutUrl]
+          properties:
+            checkoutUrl: { type: string }
+    ClaimSummary:
+      type: object
+      required: [claimId, status, summary, incidentDate, policyId, openedAt, lastActivityAt, resolvedAt]
+      properties:
+        claimId: { type: string, description: uuid }
+        status: { type: string }
+        summary: { type: [string, 'null'] }
+        incidentDate: { type: [string, 'null'] }
+        policyId: { type: [string, 'null'] }
+        openedAt: { type: string }
+        lastActivityAt: { type: string }
+        resolvedAt: { type: [string, 'null'] }
+    FileClaimRequest:
+      type: object
+      required: [description]
+      properties:
+        description: { type: string, maxLength: 10000 }
+        incidentDate: { type: string, description: YYYY-MM-DD }
+        policyId: { type: string, format: uuid }
+    FileClaimResponse:
+      type: object
+      required: [success, data, traceId]
+      properties:
+        success: { const: true }
+        traceId: { type: string }
+        data:
+          allOf:
+            - $ref: '#/components/schemas/ClaimSummary'
+            - type: object
+              required: [created, portalUrl, message]
+              properties:
+                created: { type: boolean }
+                portalUrl: { type: string }
+                message: { type: string }
+    ClaimListResponse:
+      type: object
+      required: [success, data, traceId]
+      properties:
+        success: { const: true }
+        traceId: { type: string }
+        data:
+          type: object
+          required: [claims, portalUrl]
+          properties:
+            claims:
+              type: array
+              items: { $ref: '#/components/schemas/ClaimSummary' }
+            portalUrl: { type: string }
+    ClaimResponse:
+      type: object
+      required: [success, data, traceId]
+      properties:
+        success: { const: true }
+        traceId: { type: string }
+        data:
+          allOf:
+            - $ref: '#/components/schemas/ClaimSummary'
+            - type: object
+              required: [portalUrl]
+              properties:
+                portalUrl: { type: string }
+    CreateCoiRequest:
+      type: object
+      required: [policyIds, certificateHolder]
+      properties:
+        policyIds:
+          type: array
+          minItems: 1
+          maxItems: 50
+          items: { type: string, format: uuid }
+        certificateHolder:
+          type: object
+          required: [name]
+          properties:
+            name: { type: string }
+            address: { type: string }
+            city: { type: string }
+            state: { type: string }
+            zip: { type: string }
+            email: { type: string, format: email }
+        certificateType: { type: string, enum: [additional_insured, certificate_holder] }
+        description: { type: string }
+        specialProvisions:
+          type: array
+          items: { type: string }
+    CoiDocument:
+      type: object
+      required: [formType, downloadUrl, fileName]
+      properties:
+        formType: { type: string }
+        downloadUrl: { type: string }
+        fileName: { type: string }
+    CreateCoiResponse:
+      type: object
+      required: [success, coiId, certificateNumber, downloadUrl, expiresAt, additionalDocuments, policiesIncluded, traceId]
+      properties:
+        success: { const: true }
+        coiId: { type: string }
+        certificateNumber: { type: string }
+        downloadUrl: { type: string }
+        expiresAt: { type: string }
+        additionalDocuments:
+          type: array
+          items: { $ref: '#/components/schemas/CoiDocument' }
+        endorsementGaps: { type: array }
+        policiesIncluded:
+          type: array
+          items:
+            type: object
+            required: [id]
+            properties:
+              id: { type: string }
+              carrier: { type: string }
+              policyType: { type: string }
+        traceId: { type: string }
+    CoiListResponse:
+      type: object
+      required: [success, cois, count, traceId]
+      properties:
+        success: { const: true }
+        cois:
+          type: array
+          items:
+            type: object
+            required: [id, createdAt]
+            properties:
+              id: { type: string }
+              certificateHolder: { type: [string, 'null'] }
+              certificateType: { type: [string, 'null'] }
+              policyIds: { type: [array, 'null'] }
+              s3Key: { type: [string, 'null'] }
+              createdAt: { type: string }
+        count: { type: integer }
+        traceId: { type: string }
+    TermsInfoResponse:
+      type: object
+      required: [success, data]
+      properties:
+        success: { const: true }
+        data:
+          type: object
+          required: [version, termsUrl, privacyUrl, slaUrl, summaries, brokerReview]
+          properties:
+            version: { type: string }
+            termsUrl: { type: string }
+            privacyUrl: { type: string }
+            slaUrl: { type: string }
+            summaries:
+              type: array
+              items: { type: string }
+            brokerReview:
+              type: object
+              required: [email, command]
+              properties:
+                email: { type: string }
+                command: { type: string }
+    TermsAcceptRequest:
+      type: object
+      required: [termsAccepted, termsVersion]
+      properties:
+        termsAccepted: { const: true }
+        termsVersion: { type: string, description: From GET /api/v1/legal/terms }
+    TermsAcceptResponse:
+      type: object
+      required: [success, data, traceId]
+      properties:
+        success: { const: true }
+        traceId: { type: string }
+        data:
+          type: object
+          required: [version, acceptedAt]
+          properties:
+            version: { type: string }
+            acceptedAt: { type: string }
+    CliEnrollRequest:
+      type: object
+      required: [deviceSecretHash, firstName, lastName, termsAccepted, termsVersion]
+      properties:
+        deviceSecretHash: { type: string, description: SHA-256 hex of a device secret that never leaves the terminal }
+        firstName: { type: string }
+        lastName: { type: string }
+        termsAccepted: { const: true }
+        termsVersion: { type: string }
+    CliEnrollResponse:
+      type: object
+      required: [success, data, traceId]
+      properties:
+        success: { const: true }
+        traceId: { type: string }
+        data:
+          type: object
+          required: [enrollmentId, expiresAt]
+          properties:
+            enrollmentId: { type: string }
+            expiresAt: { type: string }
+    CliExchangeRequest:
+      type: object
+      required: [enrollmentId, deviceSecret]
+      properties:
+        enrollmentId: { type: string }
+        deviceSecret: { type: string }
+    CliExchangeResponse:
+      type: object
+      required: [success, data, traceId]
+      properties:
+        success: { const: true }
+        traceId: { type: string }
+        data:
+          type: object
+          required: [apiKey, keyPrefix, companyId]
+          properties:
+            apiKey: { type: string, description: Shown once; never stored or logged }
+            keyPrefix: { type: string }
+            companyId: { type: string }
+    CliExchangePending:
+      type: object
+      required: [success, data, traceId]
+      properties:
+        success: { const: true }
+        traceId: { type: string }
+        data:
+          type: object
+          required: [status]
+          properties:
+            status: { const: pending }
+  responses:
+    TenantUnverified:
+      description: >
+        The tenant has not completed human verification. Only bootstrap
+        endpoints are callable. Request the verification challenge and hand
+        the emailed link to a human.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ErrorResponse' }
+    V1Error:
+      description: An error answer in the v1 envelope.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/V1Error' }
+    V1RetryAfterError:
+      description: Rate limited (429) or unavailable (503). Carries Retry-After.
+      headers:
+        Retry-After:
+          required: true
+          schema: { type: string }
+          description: delta-seconds
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/V1Error' }
+paths:
+  /api/v1/companies:
+    post:
+      operationId: createCompany
+      x-capability: bootstrap
+      summary: Create a company via the bootstrap-create path (idempotent via the Idempotency-Key header)
+      description: >
+        Reachable ONLY unauthenticated or with a WS2 delegated credential,
+        under per-IP and global daily caps. An existing tenant's API key
+        (any scope, including bootstrap) cannot create companies and gets
+        403. Idempotency is claim-first: the ledger row is claimed before
+        any side effect. Replays of the same (principal, Idempotency-Key)
+        with the same request-body hash return the original outcome with
+        bootstrapKey redacted; a different body hash under the same key is
+        409 (reason idempotency_conflict); a retry while the original
+        request is still in progress (or died within the last ~10 minutes)
+        is 409 (reason idempotency_in_progress, retry later). After the
+        in-progress lease expires, a retry with the same key and body takes
+        over the claim and repairs or completes the create without
+        duplicating the company.
+      security: []
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: false
+          schema: { type: string, maxLength: 255 }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateCompanyRequest' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CreateCompanyResponse' }
+        '403':
+          description: A tenant API key may not create unrelated companies (reason tenant_key_cannot_create)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '409':
+          description: >
+            Idempotency-Key contention: reuse with a different request body
+            (reason idempotency_conflict), or a request with the same key is
+            still in progress within its lease (reason
+            idempotency_in_progress; retry later).
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+        '429':
+          description: Bootstrap-create abuse cap exceeded (reason rate_limited)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorResponse' }
+  /api/v1/onboarding/state:
+    get:
+      operationId: getOnboardingState
+      x-capability: bootstrap
+      summary: Poll the onboarding state machine
+      responses:
+        '200':
+          description: Current state
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/OnboardingStateResponse' }
+  /api/v1/onboarding/status:
+    get:
+      operationId: getOnboardingChecklist
+      x-capability: bootstrap
+      summary: Legacy readiness checklist (kept for back-compat)
+      responses:
+        '200': { description: Checklist, content: { application/json: { schema: { type: object } } } }
+  /api/v1/onboarding/verification:
+    post:
+      operationId: requestVerification
+      x-capability: bootstrap
+      summary: Issue or re-issue the human verification challenge email
+      responses:
+        '200':
+          description: Challenge sent
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/VerificationChallengeResponse' }
+  /api/v1/documents:
+    post:
+      operationId: uploadDocument
+      x-capability: verified
+      summary: Upload a document (post-verification only)
+      responses:
+        '201': { description: Uploaded, content: { application/json: { schema: { type: object } } } }
+        '403': { $ref: '#/components/responses/TenantUnverified' }
+  /api/v1/onboarding/cli-enroll:
+    post:
+      operationId: cliEnroll
+      x-capability: bootstrap
+      x-conformance: handler
+      summary: CLI signup step 1b, enroll a device against the bootstrap key
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CliEnrollRequest' }
+      responses:
+        '201':
+          description: Enrollment created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CliEnrollResponse' }
+        '400': { $ref: '#/components/responses/V1Error' }
+        '401': { $ref: '#/components/responses/V1Error' }
+        '403': { $ref: '#/components/responses/V1Error' }
+        '404': { $ref: '#/components/responses/V1Error' }
+        '409': { $ref: '#/components/responses/V1Error' }
+        '426': { $ref: '#/components/responses/V1Error' }
+        '429': { $ref: '#/components/responses/V1RetryAfterError' }
+        '500': { $ref: '#/components/responses/V1Error' }
+        '503': { $ref: '#/components/responses/V1RetryAfterError' }
+  /api/v1/onboarding/cli-exchange:
+    post:
+      operationId: cliExchange
+      x-capability: public
+      x-conformance: handler
+      summary: CLI signup step 3, exchange the device secret for the user-bound key
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CliExchangeRequest' }
+      responses:
+        '200':
+          description: The key, shown once
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CliExchangeResponse' }
+        '202':
+          description: Email link not clicked yet
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CliExchangePending' }
+        '400': { $ref: '#/components/responses/V1Error' }
+        '404': { $ref: '#/components/responses/V1Error' }
+        '409': { $ref: '#/components/responses/V1Error' }
+        '410': { $ref: '#/components/responses/V1Error' }
+        '429': { $ref: '#/components/responses/V1RetryAfterError' }
+        '503': { $ref: '#/components/responses/V1RetryAfterError' }
+  /api/v1/legal/terms:
+    get:
+      operationId: getTerms
+      x-capability: public
+      x-conformance: handler
+      summary: Current Terms of Service version, links and summaries
+      security: []
+      responses:
+        '200':
+          description: Current terms
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TermsInfoResponse' }
+  /api/v1/legal/terms/accept:
+    post:
+      operationId: acceptTerms
+      x-capability: verified
+      x-conformance: handler
+      summary: Accept the current Terms of Service for the key user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TermsAcceptRequest' }
+      responses:
+        '200':
+          description: Recorded
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TermsAcceptResponse' }
+        '400': { $ref: '#/components/responses/V1Error' }
+        '401': { $ref: '#/components/responses/V1Error' }
+        '403': { $ref: '#/components/responses/V1Error' }
+        '404': { $ref: '#/components/responses/V1Error' }
+        '409': { $ref: '#/components/responses/V1Error' }
+        '426': { $ref: '#/components/responses/V1Error' }
+        '429': { $ref: '#/components/responses/V1RetryAfterError' }
+        '500': { $ref: '#/components/responses/V1Error' }
+        '503': { $ref: '#/components/responses/V1RetryAfterError' }
+  /api/v1/quotes/instant/session:
+    post:
+      operationId: startInstantSession
+      x-capability: verified
+      x-conformance: handler
+      summary: Start (or reuse) an instant quote session
+      responses:
+        '200':
+          description: Session and questions
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/InstantSessionResponse' }
+        '400': { $ref: '#/components/responses/V1Error' }
+        '401': { $ref: '#/components/responses/V1Error' }
+        '403': { $ref: '#/components/responses/V1Error' }
+        '426': { $ref: '#/components/responses/V1Error' }
+        '429': { $ref: '#/components/responses/V1RetryAfterError' }
+        '500': { $ref: '#/components/responses/V1Error' }
+        '503': { $ref: '#/components/responses/V1RetryAfterError' }
+  /api/v1/quotes/instant/submit:
+    post:
+      operationId: submitInstantQuote
+      x-capability: verified
+      x-conformance: handler
+      summary: File the answered session with the carriers
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          description: Required. Reuse it when you retry the same action; this write is not yet marked x-delegance-idempotent, so the SDK sends it once.
+          schema: { type: string, pattern: '^[A-Za-z0-9_.:-]{8,200}$' }
+      responses:
+        '200':
+          description: Submitted
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/InstantSubmitResponse' }
+        '400': { $ref: '#/components/responses/V1Error' }
+        '401': { $ref: '#/components/responses/V1Error' }
+        '403': { $ref: '#/components/responses/V1Error' }
+        '404': { $ref: '#/components/responses/V1Error' }
+        '409': { $ref: '#/components/responses/V1Error' }
+        '422': { $ref: '#/components/responses/V1Error' }
+        '426': { $ref: '#/components/responses/V1Error' }
+        '429': { $ref: '#/components/responses/V1RetryAfterError' }
+        '500': { $ref: '#/components/responses/V1Error' }
+        '503': { $ref: '#/components/responses/V1RetryAfterError' }
+  /api/v1/quotes/instant/{submissionId}:
+    get:
+      operationId: getInstantQuote
+      x-capability: verified
+      x-conformance: handler
+      summary: Carrier-by-carrier status of one submission
+      parameters:
+        - in: path
+          name: submissionId
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Status
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/InstantQuoteStatusResponse' }
+        '401': { $ref: '#/components/responses/V1Error' }
+        '403': { $ref: '#/components/responses/V1Error' }
+        '404': { $ref: '#/components/responses/V1Error' }
+        '426': { $ref: '#/components/responses/V1Error' }
+        '429': { $ref: '#/components/responses/V1RetryAfterError' }
+        '500': { $ref: '#/components/responses/V1Error' }
+        '503': { $ref: '#/components/responses/V1RetryAfterError' }
+  /api/v1/quotes/instant/{submissionId}/bind:
+    post:
+      operationId: requestBind
+      x-capability: verified
+      x-conformance: handler
+      summary: Request a bind on one offer (broker review or carrier checkout)
+      parameters:
+        - in: path
+          name: submissionId
+          required: true
+          schema: { type: string }
+        - in: header
+          name: Idempotency-Key
+          required: true
+          description: Required. Reuse it when you retry the same action; this write is not yet marked x-delegance-idempotent, so the SDK sends it once.
+          schema: { type: string, pattern: '^[A-Za-z0-9_.:-]{8,200}$' }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/BindRequest' }
+      responses:
+        '200':
+          description: Existing bind request
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/BindResponse' }
+        '201':
+          description: Bind request created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/BindResponse' }
+        '202':
+          description: Fast bind, a code was emailed
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/BindStepUpRequired' }
+        '400': { $ref: '#/components/responses/V1Error' }
+        '401': { $ref: '#/components/responses/V1Error' }
+        '403': { $ref: '#/components/responses/V1Error' }
+        '404': { $ref: '#/components/responses/V1Error' }
+        '409': { $ref: '#/components/responses/V1Error' }
+        '422': { $ref: '#/components/responses/V1Error' }
+        '426': { $ref: '#/components/responses/V1Error' }
+        '429': { $ref: '#/components/responses/V1RetryAfterError' }
+        '500': { $ref: '#/components/responses/V1Error' }
+        '503': { $ref: '#/components/responses/V1RetryAfterError' }
+  /api/v1/payments:
+    get:
+      operationId: listPayments
+      x-capability: verified
+      x-conformance: handler
+      summary: The company premium payment requests
+      responses:
+        '200':
+          description: Payment requests
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PaymentListResponse' }
+        '401': { $ref: '#/components/responses/V1Error' }
+        '403': { $ref: '#/components/responses/V1Error' }
+        '426': { $ref: '#/components/responses/V1Error' }
+        '429': { $ref: '#/components/responses/V1RetryAfterError' }
+        '500': { $ref: '#/components/responses/V1Error' }
+        '503': { $ref: '#/components/responses/V1RetryAfterError' }
+  /api/v1/payments/{paymentRequestId}/checkout:
+    post:
+      operationId: createPaymentCheckout
+      x-capability: verified
+      x-conformance: handler
+      summary: A hosted checkout link for one payment request
+      parameters:
+        - in: path
+          name: paymentRequestId
+          required: true
+          schema: { type: string }
+        - in: header
+          name: Idempotency-Key
+          required: true
+          description: Required. Reuse it when you retry the same action; this write is not yet marked x-delegance-idempotent, so the SDK sends it once.
+          schema: { type: string, pattern: '^[A-Za-z0-9_.:-]{8,200}$' }
+      responses:
+        '200':
+          description: Checkout link
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CheckoutResponse' }
+        '400': { $ref: '#/components/responses/V1Error' }
+        '401': { $ref: '#/components/responses/V1Error' }
+        '403': { $ref: '#/components/responses/V1Error' }
+        '404': { $ref: '#/components/responses/V1Error' }
+        '409': { $ref: '#/components/responses/V1Error' }
+        '422': { $ref: '#/components/responses/V1Error' }
+        '426': { $ref: '#/components/responses/V1Error' }
+        '429': { $ref: '#/components/responses/V1RetryAfterError' }
+        '500': { $ref: '#/components/responses/V1Error' }
+        '503': { $ref: '#/components/responses/V1RetryAfterError' }
+  /api/v1/claims:
+    post:
+      operationId: fileClaim
+      x-capability: verified
+      x-conformance: handler
+      summary: File a claim (claims:write key minted by a person)
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          description: Required. Reuse it when you retry the same action; this write is not yet marked x-delegance-idempotent, so the SDK sends it once.
+          schema: { type: string, pattern: '^[A-Za-z0-9_.:-]{8,200}$' }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/FileClaimRequest' }
+      responses:
+        '200':
+          description: Already on file
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/FileClaimResponse' }
+        '201':
+          description: Filed
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/FileClaimResponse' }
+        '400': { $ref: '#/components/responses/V1Error' }
+        '401': { $ref: '#/components/responses/V1Error' }
+        '403': { $ref: '#/components/responses/V1Error' }
+        '404': { $ref: '#/components/responses/V1Error' }
+        '409': { $ref: '#/components/responses/V1Error' }
+        '422': { $ref: '#/components/responses/V1Error' }
+        '426': { $ref: '#/components/responses/V1Error' }
+        '429': { $ref: '#/components/responses/V1RetryAfterError' }
+        '500': { $ref: '#/components/responses/V1Error' }
+        '503': { $ref: '#/components/responses/V1RetryAfterError' }
+    get:
+      operationId: listClaims
+      x-capability: verified
+      x-conformance: handler
+      summary: List the company claims
+      responses:
+        '200':
+          description: Claims
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ClaimListResponse' }
+        '400': { $ref: '#/components/responses/V1Error' }
+        '401': { $ref: '#/components/responses/V1Error' }
+        '403': { $ref: '#/components/responses/V1Error' }
+        '426': { $ref: '#/components/responses/V1Error' }
+        '429': { $ref: '#/components/responses/V1RetryAfterError' }
+        '500': { $ref: '#/components/responses/V1Error' }
+        '503': { $ref: '#/components/responses/V1RetryAfterError' }
+  /api/v1/claims/{claimId}:
+    get:
+      operationId: getClaim
+      x-capability: verified
+      x-conformance: handler
+      summary: One claim status
+      parameters:
+        - in: path
+          name: claimId
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Claim
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ClaimResponse' }
+        '401': { $ref: '#/components/responses/V1Error' }
+        '403': { $ref: '#/components/responses/V1Error' }
+        '404': { $ref: '#/components/responses/V1Error' }
+        '426': { $ref: '#/components/responses/V1Error' }
+        '429': { $ref: '#/components/responses/V1RetryAfterError' }
+        '500': { $ref: '#/components/responses/V1Error' }
+        '503': { $ref: '#/components/responses/V1RetryAfterError' }
+  /api/v1/coi:
+    post:
+      operationId: createCoi
+      x-capability: verified
+      x-conformance: handler
+      summary: Generate a certificate of insurance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreateCoiRequest' }
+      responses:
+        '201':
+          description: Certificate generated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CreateCoiResponse' }
+        '400': { $ref: '#/components/responses/V1Error' }
+        '401': { $ref: '#/components/responses/V1Error' }
+        '403': { $ref: '#/components/responses/V1Error' }
+        '404': { $ref: '#/components/responses/V1Error' }
+        '409': { $ref: '#/components/responses/V1Error' }
+        '426': { $ref: '#/components/responses/V1Error' }
+        '429': { $ref: '#/components/responses/V1RetryAfterError' }
+        '500': { $ref: '#/components/responses/V1Error' }
+        '502': { $ref: '#/components/responses/V1Error' }
+    get:
+      operationId: listCoi
+      x-capability: verified
+      x-conformance: handler
+      summary: List generated certificates
+      responses:
+        '200':
+          description: Certificates
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CoiListResponse' }
+        '401': { $ref: '#/components/responses/V1Error' }
+        '403': { $ref: '#/components/responses/V1Error' }
+        '426': { $ref: '#/components/responses/V1Error' }
+        '429': { $ref: '#/components/responses/V1RetryAfterError' }
+        '500': { $ref: '#/components/responses/V1Error' }

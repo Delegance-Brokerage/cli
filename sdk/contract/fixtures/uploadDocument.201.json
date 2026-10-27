@@ -1,0 +1,13 @@
+{
+  "success": true,
+  "document": {
+    "id": "d0c00000-0000-4000-8000-000000000001",
+    "fileName": "loss-runs-2025.pdf",
+    "documentType": "loss_runs",
+    "status": "pending",
+    "fileSize": "482113",
+    "createdAt": "2026-07-02T15:04:05.000Z"
+  },
+  "message": "Document uploaded successfully. Processing will begin shortly.",
+  "traceId": "7c9a9f22-8c2d-4e9c-9c1a-8cd9c9d0e1f2"
+}
